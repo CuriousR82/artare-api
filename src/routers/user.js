@@ -103,4 +103,43 @@ router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) 
     res.status(400).send({ error: error.message })
 })
 
+router.get('/users/:id/avatar', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id)
+
+        if (!user || !user.avatar) {
+            throw new Error('The user does not exist')
+        }
+
+        res.set('Content-Type', 'image/jpg')
+        res.send(user.avatar)
+    }
+    catch (e) {
+        res.status(404).send(e)
+    }
+})
+
+// for following
+router.put('/users/:id/follow', auth, async (req, res) => {
+    if (req.user.id != req.params.id) {
+        try {
+            const user = await User.findById(req.params.id)
+            if (!user.followers.includes(req.user.id)) {
+                await user.updateOne({ $push: { followers: req.user.id } })
+                await req.user.updateOne({ $push: { followings: req.params.id } })
+                res.status(200).json('User has been followed')
+            }
+            else {
+                res.status(403).json('You already follow this user')
+            }
+        }
+        catch (e) {
+            res.status(500).json(e)
+        }
+    }
+    else {
+        res.status(403).json('You cannot follow yourself')
+    }
+})
+
 module.exports = router 
