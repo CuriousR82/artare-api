@@ -58,6 +58,24 @@ router.get('/posts', auth, async (req, res) => {
     }
 })
 
+// fetch an users' posts
+router.get('/posts:id', auth, async (req, res) => {
+    const _id = req.params.id
+
+    try {
+        const posts = await Post.find({ user: _id })
+
+        if (!posts) {
+            return res.status(404).send()
+        }
+
+        res.send(posts)
+    }
+    catch (err) {
+        res.status(500).send(err)
+    }
+})
+
 // fetch post image
 router.get('/posts/:id/image', async (req, res) => {
     try {
@@ -70,6 +88,40 @@ router.get('/posts/:id/image', async (req, res) => {
     }
     catch (err) {
         res.status(404).send(err)
+    }
+})
+
+// like post
+router.put('/posts/:id/like', auth, async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.id)
+        if (!post.likes.includes(req.user.id)) {
+            await post.updateOne({ $push: { likes: req.user.id } })
+            res.status(200).json("Post is liked")
+        }
+        else {
+            res.status(403).json("You have already liked this post")
+        }
+    }
+    catch (err) {
+        res.status(500).json(err)
+    }
+})
+
+// unlike post
+router.put('/posts/:id/unlike', auth, async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.id)
+        if (post.likes.includes(req.user.id)) {
+            await post.updateOne({ $pull: { likes: req.user.id } })
+            res.status(200).json("Post is unliked")
+        }
+        else {
+            res.status(403).json("You have already unliked this post")
+        }
+    }
+    catch (err) {
+        res.status(500).json(err)
     }
 })
 

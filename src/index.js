@@ -1,8 +1,8 @@
 const express = require('express')
 require('./db/mongoose')
-
 const userRouter = require('./routers/user')
 const postRouter = require('./routers/post')
+const notificationRouter = require('./routers/notification')
 const app = express();
 
 const port = process.env.PORT || 3000;
@@ -10,6 +10,7 @@ const port = process.env.PORT || 3000;
 app.use(express.json())
 app.use(userRouter)
 app.use(postRouter)
+app.use(notificationRouter)
 
 app.get('/', (req, res) => {
     res.send('root handler');
