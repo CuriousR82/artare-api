@@ -15,6 +15,11 @@ const postSchema = new mongoose.Schema({
         required: true,
         trim: true,
     },
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
     image: {
         type: Buffer,
     },
