@@ -171,4 +171,33 @@ router.put('/users/:id/unfollow', auth, async (req, res) => {
     }
 })
 
+router.patch('/users/:id', auth, async (req, res) => {
+    const updates = Object.keys(req.body)
+    console.log(updates)
+
+    const allowedUpdates = ['name', 'email', 'password', 'website', 'bio', 'location']
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
+
+    if (!isValidOperation) {
+        return res.status(400).send({
+            error: 'Invalid updates'
+        })
+    }
+
+    try {
+        const user = req.user
+        console.log(user)
+        console.log(req.body)
+        console.log(user['name'])
+        console.log(req.body['name'])
+        updates.forEach((update) => { user[update] = req.body[update] })
+        await user.save()
+
+        res.send(user)
+    }
+    catch (e) {
+        res.status(400).send(e)
+    }
+})
+
 module.exports = router 
