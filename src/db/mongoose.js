@@ -1,11 +1,10 @@
 const mongoose = require('mongoose');
+require('dotenv').config();
 
-mongoose.connect('mongodb://127.0.0.1:27017/artare-api', {
-    // useNewUrlParser: true,
-    // useCreateIndex: true,
-    // useFindAndModify: false,
-    // useUnifiedTopology: true
-}).then(() => {
+const username = process.env.MONGODB_USERNAME;
+const password = process.env.MONGODB_PASSWORD;
+
+mongoose.connect(`mongodb+srv://${username}:${password}@cluster0.hqzsj45.mongodb.net/?retryWrites=true&w=majority`).then(() => {
     console.log('Connected to MongoDB');
 })
-
+    .catch((e) => console.log(e))
