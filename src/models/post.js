@@ -4,28 +4,28 @@ const postSchema = new mongoose.Schema({
     text: {
         type: String,
         required: true,
-        trim: true,
+        trim: true
     },
     user: {
         type: String,
-        required: true,
+        required: true
     },
     username: {
         type: String,
         required: true,
-        trim: true,
+        trim: true
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
         required: true,
+        ref: 'User'
     },
     image: {
-        type: Buffer,
+        type: Buffer
     },
     likes: {
         type: Array,
-        default: [],
+        default: []
     }
 }, {
     timestamps: true

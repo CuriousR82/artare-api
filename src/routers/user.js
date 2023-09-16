@@ -1,5 +1,6 @@
 const express = require('express');
 const User = require('../models/user');
+const jwt = require('jsonwebtoken')
 const multer = require('multer');
 const sharp = require('sharp');
 const auth = require('../middleware/auth')
@@ -71,9 +72,8 @@ router.delete('/users/:id', async (req, res) => {
 
 // fetch a single user
 router.get('/users/:id', async (req, res) => {
+    const _id = req.params.id
     try {
-        const _id = req.params.id
-
         const user = await User.findById(_id)
 
         if (!user) {

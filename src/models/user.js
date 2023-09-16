@@ -7,33 +7,34 @@ const userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        trim: true,
+        trim: true
     },
     username: {
         type: String,
         required: true,
         trim: true,
-        unique: true,
+        unique: true
     },
     email: {
         type: String,
         unique: true,
         required: true,
+        trim: true,
         lowercase: true,
         validate(value) {
             if (!validator.isEmail(value)) {
-                throw new Error('Email is invalid');
+                throw new Error('Email is invalid')
             }
         }
     },
     password: {
         type: String,
         required: true,
-        minLength: 7,
+        minlength: 7,
         trim: true,
         validate(value) {
             if (value.toLowerCase().includes('password')) {
-                throw new Error('Password cannot contain "password"');
+                throw new Error('Password cannot contain "password"')
             }
         }
     },
@@ -44,20 +45,19 @@ const userSchema = new mongoose.Schema({
         }
     }],
     avatar: {
-        type: Buffer,
-
+        type: Buffer
     },
     avatarExists: {
-        type: Boolean,
+        type: Boolean
     },
     bio: {
-        type: String,
+        type: String
     },
     website: {
-        type: String,
+        type: String
     },
     location: {
-        type: String,
+        type: String
     },
     followers: {
         type: Array,
@@ -76,13 +76,13 @@ userSchema.virtual('posts', {
     foreignField: 'user'
 })
 
-userSchema.virtual('notificationSent', {
+userSchema.virtual('notificationsSent', {
     ref: 'Notification',
     localField: '_id',
     foreignField: 'notSenderId'
 })
 
-userSchema.virtual('notificationReceived', {
+userSchema.virtual('notificationsReceived', {
     ref: 'Notification',
     localField: '_id',
     foreignField: 'notReceiverId'
@@ -94,6 +94,7 @@ userSchema.methods.toJSON = function () {
     const userObject = user.toObject()
 
     delete userObject.password
+    delete userObject.tokens // !!!
 
     return userObject
 }
@@ -106,6 +107,12 @@ userSchema.pre('save', async function (next) {
         user.password = await bcrypt.hash(user.password, 8)
     }
 
+    next()
+})
+
+userSchema.pre('remove', async function (next) {
+    const user = this
+    await Task.deleteMany({ owner: user._id })
     next()
 })
 
